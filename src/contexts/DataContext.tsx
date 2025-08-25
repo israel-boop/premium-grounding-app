@@ -27,12 +27,20 @@ const defaultRoutineTasks: RoutineTask[] = [
 
 // Add this helper function to convert Firestore data
 // Update your convertFirestoreData function:
-const convertFirestoreData = (data: Record<string, any>): Record<string, any> => {
-  if (!data) return data;
+// Replace the convertFirestoreData function with this:
+const convertFirestoreData = <T,>(data: T): T => {
+  if (!data || typeof data !== 'object') return data;
   
-  const converted: Record<string, any> = { ...data };
+  if (Array.isArray(data)) {
+    return data.map(item => convertFirestoreData(item)) as unknown as T;
+  }
   
-  // Convert Timestamps to Dates
+  if (data instanceof Timestamp) {
+    return data.toDate() as unknown as T;
+  }
+  
+  const converted = { ...data } as Record<string, unknown>;
+  
   Object.keys(converted).forEach(key => {
     const value = converted[key];
     
@@ -40,24 +48,14 @@ const convertFirestoreData = (data: Record<string, any>): Record<string, any> =>
       if (value instanceof Timestamp) {
         converted[key] = value.toDate();
       } else if (Array.isArray(value)) {
-        converted[key] = value.map(item => {
-          if (item && typeof item === 'object') {
-            if (item instanceof Timestamp) {
-              return item.toDate();
-            }
-            // Handle nested objects
-            return convertFirestoreData(item);
-          }
-          return item;
-        });
+        converted[key] = value.map(item => convertFirestoreData(item));
       } else {
-        // Handle nested objects
         converted[key] = convertFirestoreData(value);
       }
     }
   });
   
-  return converted;
+  return converted as T;
 };
 
 interface DataContextType {

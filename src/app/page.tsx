@@ -44,7 +44,7 @@ function PremiumGroundingAppContent() {
     if (routineTasks.length === 0 && data) {
       saveData({ routineTasks: defaultRoutineTasks });
     }
-  }, [routineTasks, data, saveData, defaultRoutineTasks]);
+  }, [routineTasks, data, saveData]);
 
   // App UI state (not persisted to Firebase)
   const [location, setLocation] = useState<LocationType>('Home');
@@ -340,7 +340,7 @@ function PremiumGroundingAppContent() {
         clearInterval(breathingIntervalRef.current);
       }
     };
-  }, [breathingActive, breathingPhase, breathingPreset]);
+  }, [breathingActive, breathingPhase, breathingPreset, breathingPresets]);
 
   // Meditation timer effect
   useEffect(() => {
