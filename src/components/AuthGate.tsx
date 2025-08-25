@@ -12,21 +12,27 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
   const { currentUser, login, signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    try {
-      if (isLogin) {
-        await login(email, password);
-      } else {
-        await signup(email, password);
-      }
-    } catch (error: any) {
-      setError(error.message);
+  try {
+    if (isLogin) {
+      await login(email, password);
+    } else {
+      await signup(email, password);
     }
-    setLoading(false);
-  };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      setError(err.message);
+    } else {
+      setError('An unexpected error occurred');
+    }
+  }
+
+  setLoading(false);
+};
+
 
   if (currentUser) {
     return <>{children}</>;
