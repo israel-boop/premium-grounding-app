@@ -1073,7 +1073,7 @@ function PremiumGroundingAppContent() {
             </Card>
           </>
         ) : (
-          /// History Tab 
+            /* History Tab*/
           <Card className="bg-white shadow-lg">
             <CardHeader className="p-3 md:p-6">
               <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
