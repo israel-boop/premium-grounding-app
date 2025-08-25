@@ -26,10 +26,11 @@ const defaultRoutineTasks: RoutineTask[] = [
 ];
 
 // Add this helper function to convert Firestore data
-const convertFirestoreData = (data: any): any => {
+// Update your convertFirestoreData function:
+const convertFirestoreData = (data: Record<string, any>): Record<string, any> => {
   if (!data) return data;
   
-  const converted = { ...data };
+  const converted: Record<string, any> = { ...data };
   
   // Convert Timestamps to Dates
   Object.keys(converted).forEach(key => {

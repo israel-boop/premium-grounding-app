@@ -6,15 +6,18 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  AuthError
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
 interface AuthContextType {
   currentUser: User | null;
-  login: (email: string, password: string) => Promise<any>;
-  signup: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  error: string | null;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -26,22 +29,50 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  function signup(email: string, password: string) {
-    return createUserWithEmailAndPassword(auth, email, password);
-  }
+  const clearError = () => setError(null);
 
-  function login(email: string, password: string) {
-    return signInWithEmailAndPassword(auth, email, password);
-  }
+  const signup = async (email: string, password: string): Promise<void> => {
+    try {
+      clearError();
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      const authError = error as AuthError;
+      setError(authError.message || 'Failed to create an account');
+      throw error;
+    }
+  };
 
-  function logout() {
-    return signOut(auth);
-  }
+  const login = async (email: string, password: string): Promise<void> => {
+    try {
+      clearError();
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      const authError = error as AuthError;
+      setError(authError.message || 'Failed to sign in');
+      throw error;
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      clearError();
+      await signOut(auth);
+    } catch (error) {
+      const authError = error as AuthError;
+      setError(authError.message || 'Failed to sign out');
+      throw error;
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+      setLoading(false);
+    }, (error) => {
+      const authError = error as AuthError;
+      setError(authError.message || 'Authentication state error');
       setLoading(false);
     });
 
@@ -52,7 +83,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     currentUser,
     login,
     signup,
-    logout
+    logout,
+    error,
+    clearError
   };
 
   return (

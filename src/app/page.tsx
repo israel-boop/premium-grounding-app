@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
-  Home, Heart, Users, Clock, Play, Check, Plus, Edit, Trash2, 
-  TrendingUp, Pause, RotateCcw, Settings, Calendar, Star, 
+  Home, Heart, Users, Clock, Play, Check, Plus, Trash2, 
+  TrendingUp, Pause, RotateCcw, Settings, Star, Edit, Calendar,
   Volume2, VolumeX, Sun, Moon, Cloud, Zap, Leaf, Coffee,
   History, Save, Download, Upload, LogOut
 } from "lucide-react";
@@ -44,7 +44,7 @@ function PremiumGroundingAppContent() {
     if (routineTasks.length === 0 && data) {
       saveData({ routineTasks: defaultRoutineTasks });
     }
-  }, [routineTasks, data]);
+  }, [routineTasks, data, saveData, defaultRoutineTasks]);
 
   // App UI state (not persisted to Firebase)
   const [location, setLocation] = useState<LocationType>('Home');
@@ -1073,7 +1073,7 @@ function PremiumGroundingAppContent() {
             </Card>
           </>
         ) : (
-          /* History Tab */
+          /// History Tab 
           <Card className="bg-white shadow-lg">
             <CardHeader className="p-3 md:p-6">
               <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
